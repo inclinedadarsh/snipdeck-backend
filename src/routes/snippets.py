@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from sqlmodel import Session
+from fastapi import APIRouter, HTTPException
+from sqlmodel import Session, select
 from src.schemas.snippets import SnippetCreate, SnippetRead, SnippetVersionRead
 from src.models.snippets import Snippet
 from src.models.snippet_versions import SnippetVersion
@@ -16,7 +16,7 @@ def create_snippet(snippet_data: SnippetCreate):
 
         snippet_version = SnippetVersion(
             content=snippet_data.content,
-            commit_message="Initial commit",
+            commit_message=snippet_data.commit_message,
             version_number=1,
         )
 
@@ -54,3 +54,35 @@ def create_snippet(snippet_data: SnippetCreate):
         )
 
     return snippet_read
+
+
+@router.get("/{slug}", response_model=SnippetRead)
+def get_snippet(slug: str):
+    with Session(engine) as session:
+        snippet = session.exec(select(Snippet).where(Snippet.slug == slug)).first()
+
+        if not snippet:
+            raise HTTPException(status_code=404, detail="Snippet not found")
+
+        snippet_read = SnippetRead(
+            id=snippet.id,
+            slug=snippet.slug,
+            title=snippet.title,
+            description=snippet.description,
+            language=snippet.language,
+            created_at=snippet.created_at,
+            updated_at=snippet.updated_at,
+            versions=[
+                SnippetVersionRead(
+                    id=version.id,
+                    content=version.content,
+                    commit_message=version.commit_message,
+                    version_number=version.version_number,
+                    created_at=version.created_at,
+                    updated_at=version.updated_at,
+                )
+                for version in snippet.versions
+            ],
+        )
+
+        return snippet_read
