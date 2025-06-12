@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from src.schemas.snippets import (
     SnippetCreate,
     SnippetRead,
+    SnippetVersionCreate,
     SnippetVersionRead,
     SnippetVersionWithSnippetRead,
 )
@@ -91,6 +92,39 @@ def get_snippet(slug: str):
         )
 
         return snippet_read
+
+
+@router.post("/{slug}/versions", response_model=SnippetVersionWithSnippetRead)
+def create_snippet_version(slug: str, version_data: SnippetVersionCreate):
+    with Session(engine) as session:
+        snippet = session.exec(select(Snippet).where(Snippet.slug == slug)).first()
+        if not snippet:
+            raise HTTPException(status_code=404, detail="Snippet not found")
+
+        version = SnippetVersion(
+            content=version_data.content,
+            commit_message=version_data.commit_message,
+            version_number=snippet.versions[-1].version_number + 1,
+        )
+
+        snippet.versions.append(version)
+        session.add(snippet)
+        session.commit()
+        session.refresh(snippet)
+        session.refresh(version)
+
+        return SnippetVersionWithSnippetRead(
+            id=version.id,
+            content=version.content,
+            commit_message=version.commit_message,
+            version_number=version.version_number,
+            created_at=version.created_at,
+            updated_at=version.updated_at,
+            title=snippet.title,
+            description=snippet.description,
+            language=snippet.language,
+            snippet_id=snippet.id,
+        )
 
 
 @router.get(

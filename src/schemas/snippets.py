@@ -14,6 +14,11 @@ class SnippetCreate(BaseModel):
     commit_message: str
 
 
+class SnippetVersionCreate(BaseModel):
+    content: str
+    commit_message: str
+
+
 class SnippetVersionRead(BaseModel):
     id: int
     content: str
