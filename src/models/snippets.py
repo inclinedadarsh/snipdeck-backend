@@ -15,5 +15,5 @@ class Snippet(SQLModel, table=True):
     language: str = Field(nullable=False)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
-    slug: str = Field(default=None, unique=True, index=True)
+    slug: str = Field(default=None, unique=True, index=True, nullable=False)
     versions: List["SnippetVersion"] = Relationship(back_populates="snippet")
