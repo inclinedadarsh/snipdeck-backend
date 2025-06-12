@@ -1,6 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
-from src.schemas.snippets import SnippetCreate, SnippetRead, SnippetVersionRead
+from src.schemas.snippets import (
+    SnippetCreate,
+    SnippetRead,
+    SnippetVersionRead,
+    SnippetVersionWithSnippetRead,
+)
 from src.models.snippets import Snippet
 from src.models.snippet_versions import SnippetVersion
 from src.db import engine
@@ -86,3 +91,36 @@ def get_snippet(slug: str):
         )
 
         return snippet_read
+
+
+@router.get(
+    "/{slug}/versions/{version_number}", response_model=SnippetVersionWithSnippetRead
+)
+def get_snippet_version(slug: str, version_number: int):
+    with Session(engine) as session:
+        snippet = session.exec(select(Snippet).where(Snippet.slug == slug)).first()
+        if not snippet:
+            raise HTTPException(status_code=404, detail="Snippet not found")
+
+        version = session.exec(
+            select(SnippetVersion).where(
+                SnippetVersion.snippet_id == snippet.id,
+                SnippetVersion.version_number == version_number,
+            )
+        ).first()
+
+        if not version:
+            raise HTTPException(status_code=404, detail="Version not found")
+
+        return SnippetVersionWithSnippetRead(
+            id=version.id,
+            content=version.content,
+            commit_message=version.commit_message,
+            version_number=version.version_number,
+            created_at=version.created_at,
+            updated_at=version.updated_at,
+            snippet_id=snippet.id,
+            title=snippet.title,
+            description=snippet.description,
+            language=snippet.language,
+        )

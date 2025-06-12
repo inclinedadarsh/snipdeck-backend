@@ -32,3 +32,16 @@ class SnippetRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     versions: List[SnippetVersionRead]
+
+
+class SnippetVersionWithSnippetRead(BaseModel):
+    id: int
+    content: str
+    commit_message: str
+    version_number: int
+    created_at: datetime
+    updated_at: datetime
+    snippet_id: int
+    title: str
+    description: Optional[str] = None
+    language: str
