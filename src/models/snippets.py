@@ -19,3 +19,15 @@ class Snippet(SnippetBase, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
     slug: str = Field(default=None, unique=True, index=True)
     versions: List["SnippetVersion"] = Relationship(back_populates="snippet")
+
+
+class SnippetCreate(SnippetBase):
+    pass
+
+
+class SnippetRead(SnippetBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    slug: str
+    versions: List["SnippetVersion"]
