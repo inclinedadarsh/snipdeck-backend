@@ -28,7 +28,6 @@ def create_snippet(snippet_data: SnippetCreate):
 
         snippet = Snippet(
             title=snippet_data.title,
-            description=snippet_data.description,
             language=snippet_data.language,
             versions=[snippet_version],
             slug=slug,
@@ -52,7 +51,6 @@ def create_snippet(snippet_data: SnippetCreate):
             id=snippet.id,
             slug=snippet.slug,
             title=snippet.title,
-            description=snippet.description,
             language=snippet.language,
             created_at=snippet.created_at,
             updated_at=snippet.updated_at,
@@ -74,7 +72,6 @@ def get_snippet(slug: str):
             id=snippet.id,
             slug=snippet.slug,
             title=snippet.title,
-            description=snippet.description,
             language=snippet.language,
             created_at=snippet.created_at,
             updated_at=snippet.updated_at,
@@ -121,7 +118,6 @@ def create_snippet_version(slug: str, version_data: SnippetVersionCreate):
             created_at=version.created_at,
             updated_at=version.updated_at,
             title=snippet.title,
-            description=snippet.description,
             language=snippet.language,
             snippet_id=snippet.id,
         )
@@ -155,6 +151,5 @@ def get_snippet_version(slug: str, version_number: int):
             updated_at=version.updated_at,
             snippet_id=snippet.id,
             title=snippet.title,
-            description=snippet.description,
             language=snippet.language,
         )

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from datetime import datetime
 
 if TYPE_CHECKING:
@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 class SnippetCreate(BaseModel):
     title: str
-    description: Optional[str] = None
     language: str
     content: str
     commit_message: str
@@ -32,7 +31,6 @@ class SnippetRead(BaseModel):
     id: int
     slug: str
     title: str
-    description: Optional[str] = None
     language: str
     created_at: datetime
     updated_at: datetime
@@ -48,5 +46,4 @@ class SnippetVersionWithSnippetRead(BaseModel):
     updated_at: datetime
     snippet_id: int
     title: str
-    description: Optional[str] = None
     language: str
