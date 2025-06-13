@@ -10,7 +10,7 @@ class Snippet(SQLModel, table=True):
     __tablename__ = "snippets"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field(nullable=False)
+    title: Optional[str]
     language: str = Field(nullable=False)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
